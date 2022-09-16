@@ -156,6 +156,8 @@ CASE:
 
 SUB QUERIES AS TABLE RESULT:
 
+
+
 SELECT channel, AVG(events) AS average_events
 FROM (SELECT DATE_TRUNC('day',occurred_at) AS day,
              channel, COUNT(*) as events
@@ -173,6 +175,8 @@ WHERE DATE_TRUNC('month', occurred_at) =
     FROM orders) 👉🏽THIS INDENTED QUERY IS A SINGLE VALUE
 
 NEXT EXAMPLE:
+
+
 
 SELECT *
 FROM
@@ -202,6 +206,8 @@ ON sub3.total_amount = sub2.max
 
 
 NEXT EXAMPLE:
+
+
 SELECT *
 FROM
     (SELECT region, MAX(total_sales)
