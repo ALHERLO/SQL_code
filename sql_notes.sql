@@ -242,7 +242,39 @@ FROM accounts a
 JOIN orders o
 ON a.id = o.account_id
 
+NEXT EXAMPLE:
 
+Provide the name of the sales_rep in each 
+region with the largest amount of total_amt_usd sales
+
+JOIN of subqueries in this example!
+
+SELECT sub3.rep_name, sub3.region, sub3.sales
+FROM
+      (SELECT region, MAX(sales) AS sales
+      FROM
+          (SELECT s.name AS rep_name, r.name AS region, SUM(o.total_amt_usd) AS sales
+          FROM sales_reps s
+          JOIN region r
+          ON r.id = s.region_id
+          JOIN accounts a
+          ON s.id = a.sales_rep_id
+          JOIN orders o 
+          ON a.id = o.account_id
+          GROUP BY 1, 2
+          ORDER BY 2)sub1
+      GROUP BY 1)sub2
+JOIN(SELECT s.name AS rep_name, r.name AS region, SUM(o.total_amt_usd) AS sales
+      FROM sales_reps s
+      JOIN region r
+      ON r.id = s.region_id
+      JOIN accounts a
+      ON s.id = a.sales_rep_id
+      JOIN orders o 
+      ON a.id = o.account_id
+      GROUP BY 1, 2
+      ORDER BY 2)sub3
+ON sub3.region = sub2.region AND sub3.sales = sub2.sales
 
 
 /*---------------------------------------------------------------------------*/
