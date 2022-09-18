@@ -278,6 +278,90 @@ ON sub3.region = sub2.region AND sub3.sales = sub2.sales
 
 
 /*---------------------------------------------------------------------------*/
+--WITH STATEMENT
+--1. Provide the name of the sales_rep in each 
+--region with the largest amount of total_amt_usd sales.
+
+WITH sales AS (SELECT r.name AS region, s.name AS rep, SUM(total_amt_usd) AS total_sales
+      FROM region r
+      JOIN sales_reps s
+      ON r.id=s.region_id
+      JOIN accounts a
+      ON s.id=a.sales_rep_id
+      JOIN orders o
+      ON a.id=o.account_id
+      GROUP BY 1, 2
+      ORDER BY 2 DESC), 
+      
+	  max AS (SELECT region,  MAX(total_sales) AS total_sales
+              FROM sales
+              GROUP BY 1
+             ORDER BY 2 DESC)
+      
+SELECT s.region, s.rep, s.total_sales 
+FROM sales s
+JOIN max m
+ON s.region = m.region AND s.total_sales=m.total_sales
+ORDER BY 3 DESC
+
+2.For the region with the largest sales total_amt_usd, 
+how many total orders were placed
+
+WITH t1 AS (SELECT r.name AS region, SUM(total_amt_usd) AS total_sales
+        FROM region r
+        JOIN sales_reps s
+        ON r.id=s.region_id
+        JOIN accounts a
+        ON s.id=a.sales_rep_id
+        JOIN orders o
+        ON a.id=o.account_id
+        GROUP BY 1
+        ORDER BY 2 DESC
+        LIMIT 1),
+
+
+      t2 AS(SELECT region 
+        FROM t1)
+
+
+--3. How many accounts had more total purchases than the account name which 
+--has bought the most standard_qty paper throughout their lifetime as a customer?
+
+WITH t1 AS(SELECT a.name account, SUM(o.standard_qty) quantity, SUM(o.total) total
+        FROM accounts a
+        JOIN orders o
+        ON a.id=o.account_id
+        GROUP BY 1
+        ORDER BY 2 DESC
+        LIMIT 1),
+    t2 AS(SELECT a.name 
+        FROM accounts a
+        JOIN orders o
+        ON a.id=o.account_id
+        GROUP BY 1
+        HAVING SUM(o.total)> (SELECT total FROM t1))
+SELECT COUNT(*)
+FROM t2;
+
+--4. For the customer that spent the most (in total over their lifetime as a customer) 
+--total_amt_usd, how many web_events did they have for each channel?
+
+WITH t1 AS(SELECT a.id AS id, SUM(o.total_amt_usd)
+        FROM accounts a
+        JOIN orders o
+        ON a.id=o.account_id
+        GROUP BY 1
+        ORDER BY 2 DESC
+        LIMIT 1),
+
+      t2 AS (SELECT a.name, w.channel, COUNT(w.*)
+          FROM accounts a 
+          JOIN web_events w
+          ON a.id=w.account_id
+          WHERE a.id = (SELECT id FROM t1)
+          GROUP BY 1, 2)
+
+SELECT * FROM t2
 /*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*/
