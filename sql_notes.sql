@@ -1,5 +1,6 @@
 
-/*NOTES*/
+--/*NOTES*/
+
 ORDER BY:
 
 SELECT id, occurred_at, total_amt_usd FROM orders
@@ -474,6 +475,6 @@ FROM (SELECT primary_poc AS name,
 	  RIGHT(primary_poc, LENGTH(primary_poc) - STRPOS(primary_poc, ' ') ) AS last_name
 FROM accounts)t1
 /*---------------------------------------------------------------------------*/
-TO-DATE & CAST
+--TO-DATE & CAST
 /*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*/
