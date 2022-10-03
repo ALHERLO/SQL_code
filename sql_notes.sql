@@ -476,5 +476,22 @@ FROM (SELECT primary_poc AS name,
 FROM accounts)t1
 /*---------------------------------------------------------------------------*/
 --TO-DATE & CAST
+
+CAST 👉🏽 converts one type of data to another type
+CAST(column AS new_type) 
+column :: new_type
+
+WITH t1 AS(SELECT LEFT(date, 2) as my_month,
+  RIGHT(LEFT(date, 10), 4) as my_year, 
+  RIGHT(LEFT(date, 5), 2) as my_day
+  FROM sf_crime_data),
+
+  t2 AS (
+  SELECT (my_year || '-' || my_month || '-' || my_day) AS new_date
+  FROM t1)
+
+SELECT CAST(new_date AS date) AS casted_date_1,
+        new_date::date AS casted_date_2
+        FROM t2
 /*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*/
